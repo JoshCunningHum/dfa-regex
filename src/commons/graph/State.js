@@ -91,8 +91,9 @@ export default class State{
 
         ctx.fillStyle = '#999';
         ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
         ctx.font = '12px Roboto';
-        ctx.fillText(label, x, y + radius + 15 + (this.isFinish ? 10 : 0));
+        ctx.fillText(label, x, y + 1);
 
         if(this.isStart) Util.drawArrow(ctx, x - radius, y, 0, 90);
     }

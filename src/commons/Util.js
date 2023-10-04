@@ -7,6 +7,8 @@ export default class Util {
         return Math.random().toString(36).substring(2,len+2);
     }
 
+    static deg360 = Math.PI * 2;
+    static deg90 = Math.PI / 2;
     static deg2Rad = deg => Math.PI * deg / 180;
     static rad2Deg = rad => rad * 180 / Math.PI;
 
@@ -68,7 +70,6 @@ export default class Util {
 
         // ctx.strokeStyle = 'green';
         // this.line(ctx, ...coa.toArray(), ...ct.toArray());
-
 
         return {
             start: sa,
