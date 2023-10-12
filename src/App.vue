@@ -37,7 +37,14 @@
               </v-btn-toggle>
 
               <div class="pt-1">
-                <v-btn @click="mainStore.deleteAll()"> 🗑️ </v-btn>
+                <v-btn @click="mainStore.deleteAll()"> 🗑️ 
+                  <v-tooltip
+                    activator="parent"
+                    class="p-0"
+                    content-class="hotkey-tooltip">
+                      <span class="capitalize">Delete All</span>
+                  </v-tooltip>
+                </v-btn>
               </div>
 
             </v-sheet>

@@ -74,13 +74,14 @@
 
             <v-divider></v-divider>
 
-            <div class="flex gap-2">
-                <div class="w-12">
+            <div class="flex flex-col gap-2">
+                <div class="">
                     <v-autocomplete 
                         hide-details
                         density="compact"
                         append-icon=""
                         variant="outlined"
+                        label="Destination State"
                         :items="stateList"
                         v-model="tempLabel"/>
                 </div>
@@ -112,7 +113,7 @@ import { useAlphabetStore } from '@/stores/alphabetStore';
 import { useMainStore } from '@/stores/mainStore';
 import { useStateStore } from '@/stores/stateStore';
 import { useTransitionStore } from '@/stores/transitionStore';
-import { reactive } from 'vue';
+import { reactive, onMounted } from 'vue';
 import { ref } from 'vue';
 import { watch } from 'vue';
 import { computed } from 'vue';
@@ -189,6 +190,12 @@ export default {
 
             updateTransArr();
         }
+
+        watch(state, () => {
+            if(state.value !== undefined) return;
+            tempLabel.value = '';
+            tempTransitions.value.splice(0);
+        })
 
         return {
             state,
