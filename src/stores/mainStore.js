@@ -52,6 +52,8 @@ export const useMainStore = defineStore("main", () => {
             accepting = stateStore.accepting;
 
 
+        console.log(initial, states.length, transition.length, accepting.length);
+
         if(initial === undefined ||
             states.length === 0 ||
             transition.length === 0 ||
@@ -120,30 +122,34 @@ export const useMainStore = defineStore("main", () => {
         console.log('generating');
         // validate first
         if(!checkForValidity()) return;
+        console.log('is valid');
 
         const states = stateStore.states,
             transition = transitionStore.transitions,
             initial = stateStore.savedStart,
             accepting = stateStore.accepting;
 
-        const str = `#state
-        ${states.map(s => s.label).join('\n')}
-        #initial
-        ${initial}
-        #accepting
-        ${accepting.map(a => a.label).join('\n')}
-        #alphabet
-        ${alphabetStore.alphabet.join('\n')}
-        #transitions
-        ${transition.map(t => t.str).join('\n')}`;
+        const str = `#states
+${states.map(s => s.label).join('\n')}
+#initial
+${initial.label}
+#accepting
+${accepting.map(a => a.label).join('\n')}
+#alphabet
+${alphabetStore.alphabet.join('\n')}
+#transitions
+${transition.map(t => t.str()).join('\n')}`;
 
         let a, r;
+
+        console.log(str);
 
         try {
             a = noam.fsm.parseFsmFromString(str);
             a = noam.fsm.minimize(a);
-            r = noam.re.tree.simplify(r, {"useFsmPatterns": false});
-            r = noam.re.tree.toString(r);
+            a = noam.fsm.toRegex(a);
+            a = noam.re.tree.simplify(a, {"useFsmPatterns": true});
+            r = noam.re.tree.toString(a);
         }catch(err){
             regexResult.value = '';
             console.log(err);

@@ -2,7 +2,7 @@
     <div v-if="state !== undefined" class="flex flex-grow flex-col gap-2">
         <div class="flex justify-between items-end">
             <div class="text-2xl">State</div>
-            <span class="text-caption text-neutral-500">[{{ state.pos.x }}, {{ state.pos.y }}]</span>
+            <span class="text-caption text-neutral-500">[{{ state.pos.x.toFixed(0) }}, {{ state.pos.y.toFixed(0) }}]</span>
         </div>
         <div>
             <v-text-field
@@ -10,6 +10,7 @@
                 hide-details
                 variant="solo-filled"
                 label="State Label"
+                density="compact"
                 clearable>
 
             </v-text-field>
@@ -37,7 +38,8 @@
                 hide-details
                 density="compact"
                 v-model="state.isFinish"
-                :label="'Ending State'">
+                :label="'Ending State'"
+                @change="mainStore.genRegex()">
             </v-switch>
             </div>
         </div>
@@ -74,7 +76,7 @@
 
             <v-divider></v-divider>
 
-            <div class="flex flex-col gap-2">
+            <div class="flex flex-col gap-2 pt-3">
                 <div class="">
                     <v-autocomplete 
                         hide-details
@@ -210,7 +212,8 @@ export default {
             tempLabel,
             tempTransitions,
             addTransition,
-            tempIsStart
+            tempIsStart,
+            mainStore
         }
     }
 }

@@ -2,7 +2,7 @@
   <v-app>
     <v-main class="flex h-screen w-screen min-h-0">
         <!-- Options / Settings -->
-        <v-sheet width="300px" class="p-3 flex flex-col gap-2 overflow-auto">
+        <v-sheet width="400px" class="p-3 flex flex-col gap-2 overflow-auto">
 
           <!-- Alphabet -->
           <AlphabetLister />
@@ -60,6 +60,9 @@
           </v-sheet>
         </v-sheet>
 
+        <div class="absolute right-0 p-4">
+          <SettingsMenu />
+        </div>
 
     </v-main>
   </v-app>
@@ -85,6 +88,7 @@ import FSMVisualizer from './components/FSMVisualizer.vue';
 import AlphabetLister from './components/AlphabetLister.vue';
 import TransitionFab from './components/TransitionFab.vue';
 import StateHelper from './components/StateHelper.vue';
+import SettingsMenu from './components/SettingsMenu.vue';
 
 export default {
   name: 'App',
@@ -92,7 +96,8 @@ export default {
     FSMVisualizer,
     AlphabetLister,
     TransitionFab,
-    StateHelper
+    StateHelper,
+    SettingsMenu
   },
   setup() {
 

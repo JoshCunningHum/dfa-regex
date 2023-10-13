@@ -11,20 +11,16 @@
                         {{ modeStore.linkStart }} → {{ modeStore.linkEnd }}
                     </div>
                 </div>
-                <v-autocomplete
-                    clearable
-                    chips
-                    label="Transition"
-                    :items="alphabet"
+                <v-btn-toggle
                     multiple
-                    hide-details
-                    variant="outlined"
-                    v-model="selectedItems"
-                    density="compact"
-                    closable-chips
-                    >
-
-                </v-autocomplete>
+                    class="flex-col h-auto"
+                    rounded="0"
+                    v-model="selectedItems">
+                    <v-btn v-for="a in alphabet" :key="a"
+                        style="height: 36px;" :value="a">
+                        {{  a }}
+                    </v-btn>
+                </v-btn-toggle>
                 <div>
                     <v-btn :disabled="selectedItems.length === 0" block color="success" @click="add">
                         Add
@@ -86,7 +82,6 @@ export default {
             selectedItems.value.splice(0);
             open.value = false;
             modeStore.linkReset();
-            modeStore.mode = 'default';
         }
 
         return {
@@ -106,5 +101,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
+.v-btn-toggle {
+    flex-direction: column;
+}
 </style>
