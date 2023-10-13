@@ -126,7 +126,7 @@ export const useMainStore = defineStore("main", () => {
         return `#states
 ${states.map(s => s.label).join('\n')}
 #initial
-${initial.label}
+${initial?.label}
 #accepting
 ${accepting.map(a => a.label).join('\n')}
 #alphabet

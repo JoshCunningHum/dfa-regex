@@ -12,7 +12,7 @@
             width="500px"
             max-height="80vh">
             <v-sheet
-            class="px-3 p-2 flex flex-col">
+            class="px-3 p-2 flex flex-col pb-4">
 
                 <div class="text-2xl">
                     Settings
@@ -50,6 +50,15 @@
                     <div class="text-caption">Miscellaneous</div>
                     <div class="px-5 flex flex-col gap-2">
                         <div>
+                            <v-switch
+                                v-model="settingsStore.saveFSMOnExit"
+                                hide-details
+                                density="compact"
+                                label="Save FSM on exit">
+
+                            </v-switch>
+                        </div>
+                        <div>
                             <v-btn elevation="3" block
                                 @click="copyFormalSpecs">
                                 Copy current dfa formal specifications
@@ -75,7 +84,7 @@ const mainStore = useMainStore();
 
 const settingsStore = useSettingStore();
 
-const expand = ref(true);
+const expand = ref(false);
 
 const copyFormalSpecs = () => {
     const text = mainStore.formal_specs;

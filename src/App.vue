@@ -113,6 +113,7 @@
 import { computed, ref } from 'vue';
 import { watch } from 'vue';
 import { reactive } from 'vue';
+import { onMounted } from 'vue';
 
 // Stores
 import { useMainStore } from './stores/mainStore';
@@ -120,6 +121,8 @@ import { useModeStore } from './stores/modeStore';
 import { useAlphabetStore } from './stores/alphabetStore';
 import { useTransitionStore } from './stores/transitionStore';
 import { useStateStore } from './stores/stateStore';
+import { useFileStore } from './stores/fileStore';
+import { useSettingStore } from './stores/settingsStore';
 
 // Components
 import FSMVisualizer from './components/FSMVisualizer.vue';
@@ -128,8 +131,6 @@ import TransitionFab from './components/TransitionFab.vue';
 import StateHelper from './components/StateHelper.vue';
 import SettingsMenu from './components/SettingsMenu.vue';
 import SaveFile from './components/SaveFile.vue';
-import { onMounted } from 'vue';
-import { useFileStore } from './stores/fileStore';
 
 export default {
   name: 'App',
@@ -149,6 +150,7 @@ export default {
       alphabetStore = useAlphabetStore(),
       transitionStore = useTransitionStore(),
       stateStore = useStateStore(),
+      settingsStore = useSettingStore(),
       fileStore = useFileStore();
 
     const tools = reactive([
@@ -191,6 +193,9 @@ export default {
       
       fileStore.loadDFA(JSON.parse(file));
     }
+    
+    // Load settings on local storage
+    settingsStore.sync();
 
     return {
       mainStore,
