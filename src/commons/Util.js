@@ -65,6 +65,9 @@ export default class Util {
         ctx.stroke();
         ctx.closePath();
 
+        const endTangent = t.clone().subtract(coa).rotateDeg(-90).invert(),
+            startTangent = f.clone().subtract(coa);
+
         const ctd = center.clone().invert().rotateDeg(-a2);
         const ct = ctd.clone().add(ctd.norm().multiplyScalar(15)).add(coa);
 
@@ -72,8 +75,8 @@ export default class Util {
         // this.line(ctx, ...coa.toArray(), ...ct.toArray());
 
         return {
-            start: sa,
-            end: ea,
+            start: startTangent,
+            end: endTangent,
             center: ct
         }
     }
@@ -106,17 +109,28 @@ export default class Util {
         const o = new Victor(x, y),
             a = angle instanceof Victor ? 
             angle.clone().norm() : 
-            new Victor(1, 0).rotateDeg(angle);
+            (new Victor(1, 0)).rotateByDeg(angle);
+
+        const orig_a = a.clone().multiplyScalar(arrowSize);
 
         ctx.beginPath();
 
-        a.rotateDeg(180 - arrowAngle / 2).multiplyScalar(arrowSize);
+        a.rotateDeg(-arrowAngle/2).multiplyScalar(arrowSize);
         ctx.moveTo(...o.toArray());
         ctx.lineTo(...o.clone().add(a).toArray());
         a.rotateDeg(arrowAngle);
         ctx.lineTo(...o.clone().add(a).toArray());
         ctx.lineTo(...o.toArray());
         ctx.fill();
+
+        ctx.closePath();
+
+        ctx.beginPath();
+
+        // ctx.strokeStyle = 'red';
+        // ctx.moveTo(...o.toArray());
+        // ctx.lineTo(...o.add(orig_a).toArray());
+        // ctx.stroke();
 
         ctx.closePath();
     }

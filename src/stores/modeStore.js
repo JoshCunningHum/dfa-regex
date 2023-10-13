@@ -32,7 +32,7 @@ export const useModeStore = defineStore('mode', () => {
         ctx.closePath();
 
         // Triangle
-        const v = new Victor(x, y).subtract(start.pos).normalize().multiplyScalar(25);
+        const v = new Victor(x, y).subtract(start.pos).normalize().multiplyScalar(25).invert();
         Util.drawArrow(ctx, x, y, v);
 
         // Inner Circle

@@ -71,7 +71,7 @@ export default class Transition{
 
         const transitionStore = useTransitionStore();
 
-        let arrAngle = 0, textPos = null;
+        let textPos = null;
 
         // Line
         ctx.strokeStyle = '#999';
@@ -91,26 +91,31 @@ export default class Transition{
             ctx.stroke();
             ctx.closePath();
 
+            vnorm.invert();
+
             textPos = this.from.pos.clone().mix(this.to.pos, 0.5)
             .add(vdir.clone().rotateDeg(-90)
             .norm().multiplyScalar(tw)).toArray();
 
         }else if(this.from.label === this.to.label){
             // For self referencing
-            const arcLoc = 90, 
+            const arcCoverage = 90;
+
+            const arcLoc = 0, 
                 tmp = new Victor(0, -(this.from.options.radius + 5));
 
-            end = this.from.pos.clone().add(tmp.clone().rotateDeg(-arcLoc / 2));
+            end = this.from.pos.clone().add(tmp.clone().rotateDeg(arcLoc));
 
             const { end: ea } = Util.drawArcFromTwoPoints(ctx,
-                ...this.from.pos.clone().add(tmp.clone().rotateDeg(arcLoc / 2)).toArray(),
+                ...this.from.pos.clone().add(tmp.clone().rotateDeg(arcLoc + arcCoverage)).toArray(),
                 ...end.toArray(),
                 270);
             
-            arrowSize = 15;
+            arrowSize = 10;
+
+            vnorm.copy(ea);
 
             textPos = this.from.pos.clone().add(tmp.clone().multiplyScalar(2.8)).toArray();
-            arrAngle = -ea + (Math.PI * 10 / 9);
         }else {
             
             const maxArc = 150, minArc = 15,
@@ -120,14 +125,14 @@ export default class Transition{
             const { start: sa, end: ea, center: c } = Util.drawArcFromTwoPoints(ctx, ...start.toArray(), ...end.toArray(), 
                 arc > 1 ? maxArc : maxArc * arc < minArc ? minArc : maxArc * arc
             )
-            arrAngle = Math.PI / 2 - sa;
+            vnorm.copy(ea);
 
             textPos = c.toArray();
         }
 
         // Arrow
         const arrowAngle = 20;
-        Util.drawArrow(ctx, ...end.toArray(), arrAngle === 0 ? vnorm : vnorm.rotateBy(arrAngle), arrowAngle, arrowSize);
+        Util.drawArrow(ctx, ...end.toArray(), vnorm, arrowAngle, arrowSize);
 
         ctx.fillText(
             this.v.join(', '), 
