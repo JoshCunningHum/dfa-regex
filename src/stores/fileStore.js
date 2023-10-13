@@ -26,7 +26,7 @@ export const useFileStore = defineStore('file', () => {
         transitionStore = useTransitionStore(),
         mainStore = useMainStore();
 
-    const saveDFA = filename => {
+    const getFSMAsJSON = () => {
         // Get all alphabet
         const alphabet = [...alphabetStore.alphabet];
         // Get all states, and their positions, and configurations (start/end)
@@ -49,6 +49,18 @@ export const useFileStore = defineStore('file', () => {
         const start = stateStore.savedStart?.label,
             final = stateStore.accepting.map(s => s.label);
 
+        return {
+            alphabet: alphabet,
+            states: states,
+            transitions: transitions,
+            start: start,
+            final: final
+        }
+    }
+
+    const saveDFA = filename => {
+        const { alphabet, states, start, transitions, final } = getFSMAsJSON();
+
         // Save as json string
         saveAsFile(JSON.stringify({
             alphabet: alphabet,
@@ -60,6 +72,8 @@ export const useFileStore = defineStore('file', () => {
     }
 
     const loadDFA = data => {
+        if(data === undefined) return;
+
         const { alphabet, final, states, transitions, start } = data;
 
         console.log("Imported Data: ", data);
@@ -80,7 +94,7 @@ export const useFileStore = defineStore('file', () => {
                 stateStore.addState(gen);
             })
 
-            if(start) stateStore.setStart(start);
+            if(start && states.includes(start)) stateStore.setStart(start);
 
             // Generate Transitions
             transitions.forEach(t => {
@@ -102,6 +116,7 @@ export const useFileStore = defineStore('file', () => {
 
     return {
         saveDFA,
-        loadDFA
+        loadDFA,
+        getFSMAsJSON
     }
 })

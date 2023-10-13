@@ -61,7 +61,7 @@
                         <div>
                             <v-btn elevation="3" block
                                 @click="copyFormalSpecs">
-                                Copy current dfa formal specifications
+                                Copy current machine formal specifications
                             </v-btn>
                         </div>
                     </div>
