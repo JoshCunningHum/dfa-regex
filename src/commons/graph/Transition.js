@@ -64,7 +64,7 @@ export default class Transition{
 
         const vnorm = vdir.clone().norm();
 
-        const v = vnorm.clone().multiplyScalar(this.from.options.radius);
+        const v = vnorm.clone().multiplyScalar(this.from.options.radius + 7);
         
         let end = this.to.pos.clone().subtract(v),
             start = this.from.pos.clone().add(v);
@@ -99,30 +99,49 @@ export default class Transition{
 
         }else if(this.from.label === this.to.label){
             // For self referencing
-            const arcCoverage = 90;
+            const arcCoverage = 60, 
+                arcLoc = -90, 
+                len = 15,
+                touchPoint = this.from.options.radius + 5,
+                ssl = new Victor(touchPoint, 0).rotateDeg(arcLoc + arcCoverage / 2),
+                esl = ssl.clone().rotateDeg(-arcCoverage),
+                dir = ssl.clone().rotateDeg(-arcCoverage / 2).norm(),
+                sel = ssl.clone().add(dir.clone().multiplyScalar(len)),
+                eel = esl.clone().add(dir.clone().multiplyScalar(len));
 
-            const arcLoc = 0, 
-                tmp = new Victor(0, -(this.from.options.radius + 5));
+            textPos = this.from.pos.clone()
+                .add(dir.multiplyScalar(touchPoint + len + 20)).toArray();
 
-            end = this.from.pos.clone().add(tmp.clone().rotateDeg(arcLoc));
+            Util.line(ctx,
+                ...this.from.pos.clone().add(ssl).toArray(),
+                ...this.from.pos.clone().add(sel).toArray());
+            Util.line(ctx,
+                ...this.from.pos.clone().add(esl).toArray(),
+                ...this.from.pos.clone().add(eel).toArray());
 
             const { end: ea } = Util.drawArcFromTwoPoints(ctx,
-                ...this.from.pos.clone().add(tmp.clone().rotateDeg(arcLoc + arcCoverage)).toArray(),
-                ...end.toArray(),
-                270);
+                ...this.from.pos.clone().add(sel).toArray(),
+                ...this.from.pos.clone().add(eel).toArray(),
+                180);
+
+            // ctx.strokeStyle = 'green';
+            // Util.line(ctx,
+            //     ...this.from.pos.toArray(),
+            //     ...this.from.pos.clone().add(ssl).toArray())
             
-            arrowSize = 10;
+            end.copy(this.from.pos.clone().add(esl));
+
+            arrowSize = 15;
 
             vnorm.copy(ea);
-
-            textPos = this.from.pos.clone().add(tmp.clone().multiplyScalar(2.8)).toArray();
         }else {
             
             const maxArc = 150, minArc = 15,
                 arc = maxArc**2 / this.from.pos.distanceSq(this.to.pos);
                 
 
-            const { start: sa, end: ea, center: c } = Util.drawArcFromTwoPoints(ctx, ...start.toArray(), ...end.toArray(), 
+            const { start: sa, end: ea, center: c } = Util.drawArcFromTwoPoints(ctx, 
+                ...start.toArray(), ...end.toArray(), 
                 arc > 1 ? maxArc : maxArc * arc < minArc ? minArc : maxArc * arc
             )
             vnorm.copy(ea);

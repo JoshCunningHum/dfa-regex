@@ -37,7 +37,7 @@ export const useModeStore = defineStore('mode', () => {
 
         // Inner Circle
         ctx.beginPath();
-        ctx.arc(...start.pos.toArray(), 5, 0, Math.PI * 2);
+        ctx.arc(...start.pos.toArray(), 15, 0, Math.PI * 2);
         ctx.fill();
         ctx.closePath();
 
