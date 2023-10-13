@@ -2,6 +2,7 @@ import Victor from "victor";
 import State from "./State";
 import { useTransitionStore } from "@/stores/transitionStore";
 import Util from "../Util";
+import { useStateStore } from "@/stores/stateStore";
 
 export default class Transition{
     /**@type {State} */
@@ -69,7 +70,8 @@ export default class Transition{
         let end = this.to.pos.clone().subtract(v),
             start = this.from.pos.clone().add(v);
 
-        const transitionStore = useTransitionStore();
+        const transitionStore = useTransitionStore(),
+            stateStore = useStateStore();
 
         let textPos = null;
 
@@ -99,10 +101,40 @@ export default class Transition{
 
         }else if(this.from.label === this.to.label){
             // For self referencing
+
+            // Get all vector directions that connects to this state, and fine the average
+            /**@type {Set<State>} */
+            const cSet = new Set();
+
+            transitionStore.transitions.forEach(t => {
+                // Skip self
+                if(t.from.label === this.from.label
+                    && t.to.label === this.to.label) return;
+
+                if(t.from.label === this.from.label) cSet.add(t.to.label);
+                else if(t.to.label === this.from.label) cSet.add(t.from.label);
+            })
+
+            /**@type {State[]} */
+            const connected = [];
+            cSet.forEach(sLabel => connected.push(stateStore.getState(sLabel)));
+
+            // this.v.splice(0);
+            // this.v.push(...connected.map(s => s.label));
+
+            const sldir = new Victor(0, cSet.size === 0 ? 1 : 0);
+
+            // Loop  through all connected states then get the average vector
+            connected.forEach(s => {
+                sldir.add(s.pos.clone().subtract(this.from.pos).norm())
+            })
+            sldir.norm().invert();
+
+
             const arcCoverage = 60, 
-                arcLoc = -90, 
+                arcLoc = sldir.angleDeg(), 
                 len = 15,
-                touchPoint = this.from.options.radius + 5,
+                touchPoint = this.from.options.radius + 7,
                 ssl = new Victor(touchPoint, 0).rotateDeg(arcLoc + arcCoverage / 2),
                 esl = ssl.clone().rotateDeg(-arcCoverage),
                 dir = ssl.clone().rotateDeg(-arcCoverage / 2).norm(),

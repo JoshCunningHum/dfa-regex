@@ -105,6 +105,6 @@ export default class State{
         ctx.fillText(label, x, y + 1);
 
         ctx.fillStyle = borderColor;
-        if(this.isStart) Util.drawArrow(ctx, x - radius, y, 0, 90);
+        if(this.isStart) Util.drawArrow(ctx, x - radius, y, 180, 90);
     }
 }
