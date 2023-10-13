@@ -19,12 +19,13 @@ export const useSettingStore = defineStore('setting', () => {
         // Sync with local storage
         const data = Local.get('config');
 
-        if(data === null) return;
+        if(data !== null) {
 
-        simplifyDFARegex.value = data.simplifyDFARegex;
-        saveFSMOnExit.value = data.saveFSMOnExit;
-
-        if(saveFSMOnExit.value) fileStore.loadDFA(data.fsmData);
+            simplifyDFARegex.value = data.simplifyDFARegex;
+            saveFSMOnExit.value = data.saveFSMOnExit;
+    
+            if(saveFSMOnExit.value) fileStore.loadDFA(data.fsmData);
+        }
 
         // Listen for when the page closes/refreshes
         window.addEventListener("beforeunload", () => save());
