@@ -9,12 +9,55 @@
         <v-dialog
             v-model="expand"
             activator="parent"
-            width="500px">
+            width="500px"
+            max-height="80vh">
             <v-sheet
-            class="p-2">
-                <div>
-                    Test
+            class="px-3 p-2 flex flex-col">
+
+                <div class="text-2xl">
+                    Settings
                 </div>
+
+                <div class="flex-grow overflow-y-auto flex flex-col gap-2 pt-2">
+                    
+                    <div class=text-caption>Conversion</div>
+                    <div class="pl-5 flex flex-col gap-2">
+                        <!--  Simplification -->
+                        <div>
+                            <v-switch
+                                v-model="settingsStore.simplifyDFARegex"
+                                hide-details
+                                density="compact">
+
+                                <template v-slot:label>
+                                    Simplified DFA-Regex
+                                    <span class="ml-1 bg-neutral-500/50 rounded-full w-5 h-5 flex justify-center items-center">
+                                        
+                                        <v-icon size="xs">mdi-help</v-icon>
+
+                                        <v-tooltip
+                                            activator="parent">
+                                            Optimizes the result conversion to its most minimized version. <br>
+                                            $ - symbolizes the empty string
+                                        </v-tooltip>
+                                    </span>
+                                </template>
+
+                            </v-switch>
+                        </div>
+                    </div>
+
+                    <div class="text-caption">Miscellaneous</div>
+                    <div class="px-5 flex flex-col gap-2">
+                        <div>
+                            <v-btn elevation="3" block
+                                @click="copyFormalSpecs">
+                                Copy current dfa formal specifications
+                            </v-btn>
+                        </div>
+                    </div>
+                </div>
+
             </v-sheet>
         </v-dialog>
 
@@ -22,9 +65,22 @@
 </template>
 
 <script setup>
+import Util from '../commons/Util';
+import { useMainStore } from '@/stores/mainStore';
+import { useSettingStore } from '@/stores/settingsStore';
 import { ref } from 'vue';
 
-const expand = ref(false);
+
+const mainStore = useMainStore();
+
+const settingsStore = useSettingStore();
+
+const expand = ref(true);
+
+const copyFormalSpecs = () => {
+    const text = mainStore.formal_specs;
+    Util.copyToClipboard(text);
+}
 
 </script>
 

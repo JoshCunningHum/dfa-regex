@@ -2,18 +2,20 @@ import { focus, getMonitor, initCanvas, monitor } from "@/commons/canvas/CanvasI
 import State from "@/commons/graph/State";
 import Transition from "@/commons/graph/Transition";
 import { defineStore } from "pinia";
-import { reactive, ref } from "vue";
+import { computed, reactive, ref } from "vue";
 import { useStateStore } from "./stateStore";
 import { useTransitionStore } from "./transitionStore";
 import noam from "@/plugins/noam";
 import Victor from "victor";
 import { useAlphabetStore } from "./alphabetStore";
+import { useSettingStore } from "./settingsStore";
 
 export const useMainStore = defineStore("main", () => {
 
     const stateStore = useStateStore(),
         transitionStore = useTransitionStore(),
-        alphabetStore = useAlphabetStore();
+        alphabetStore = useAlphabetStore(),
+        settingsStore = useSettingStore();
 
     /**@type {State} */
     const selected = ref(undefined),
@@ -114,19 +116,14 @@ export const useMainStore = defineStore("main", () => {
 
     const regexResult = ref('');
 
-    const genRegex = () => {
-
-        console.log('generating');
-        // validate first
-        if(!checkForValidity()) return;
-        console.log('is valid');
+    const formal_specs = computed(() => {
 
         const states = stateStore.states,
             transition = transitionStore.transitions,
             initial = stateStore.savedStart,
             accepting = stateStore.accepting;
 
-        const str = `#states
+        return `#states
 ${states.map(s => s.label).join('\n')}
 #initial
 ${initial.label}
@@ -136,6 +133,14 @@ ${accepting.map(a => a.label).join('\n')}
 ${alphabetStore.alphabet.join('\n')}
 #transitions
 ${transition.map(t => t.str()).join('\n')}`;
+    });
+
+    const genRegex = () => {
+
+        // validate first
+        if(!checkForValidity()) return;
+
+        const str = formal_specs.value;
 
         let a, r;
 
@@ -143,7 +148,7 @@ ${transition.map(t => t.str()).join('\n')}`;
             a = noam.fsm.parseFsmFromString(str);
             a = noam.fsm.minimize(a);
             a = noam.fsm.toRegex(a);
-            a = noam.re.tree.simplify(a, {"useFsmPatterns": true});
+            a = noam.re.tree.simplify(a, {"useFsmPatterns": settingsStore.simplifyDFARegex});
             r = noam.re.tree.toString(a);
         }catch(err){
             regexResult.value = '';
@@ -166,6 +171,8 @@ ${transition.map(t => t.str()).join('\n')}`;
         
         genDFA,
         genRegex,
-        regexResult
+        regexResult,
+        
+        formal_specs
     }
 }) 

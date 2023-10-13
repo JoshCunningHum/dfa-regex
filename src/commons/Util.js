@@ -102,7 +102,7 @@ export default class Util {
      * @param {(Number|Victor)} angle 
      * @param {Boolean} goIn 
      */
-    static drawArrow(ctx, x, y, angle, arrowAngle = 25, goIn = true){
+    static drawArrow(ctx, x, y, angle, arrowAngle = 25, arrowSize = 25, goIn = true){
         const o = new Victor(x, y),
             a = angle instanceof Victor ? 
             angle.clone().norm() : 
@@ -110,7 +110,7 @@ export default class Util {
 
         ctx.beginPath();
 
-        a.rotateDeg(180 - arrowAngle / 2).multiplyScalar(25);
+        a.rotateDeg(180 - arrowAngle / 2).multiplyScalar(arrowSize);
         ctx.moveTo(...o.toArray());
         ctx.lineTo(...o.clone().add(a).toArray());
         a.rotateDeg(arrowAngle);
@@ -119,5 +119,10 @@ export default class Util {
         ctx.fill();
 
         ctx.closePath();
+    }
+
+    static copyToClipboard = text => {
+        // I thought I have to do the input trick
+        navigator.clipboard.writeText(text);
     }
 }

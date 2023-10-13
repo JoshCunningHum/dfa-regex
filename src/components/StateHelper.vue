@@ -29,7 +29,10 @@
                 <v-switch
                     hide-details
                     density="compact"
+                    :true-value="true"
+                    :false-value="false"
                     v-model="tempIsStart"
+                    @change="changeStartStatus"
                     :label="'Starting State'">
                 </v-switch>
             </div>
@@ -151,10 +154,16 @@ export default {
         
         const tempIsStart = ref(false);
 
-        watch(tempIsStart, v => {
+        // watch(tempIsStart, v => {
+        //     if(v) stateStore.setStart(label.value);
+        //     else if(state.value) state.value.isStart = false;
+        // })
+
+        const changeStartStatus = () => {
+            const v = tempIsStart.value;
             if(v) stateStore.setStart(label.value);
             else if(state.value) state.value.isStart = false;
-        })
+        }
 
         watch(label, v => {
             transArr.splice(0);
@@ -213,7 +222,8 @@ export default {
             tempTransitions,
             addTransition,
             tempIsStart,
-            mainStore
+            mainStore,
+            changeStartStatus
         }
     }
 }

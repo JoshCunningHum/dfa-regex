@@ -64,7 +64,7 @@ export default class Transition{
 
         const vnorm = vdir.clone().norm();
 
-        const v = vnorm.clone().multiplyScalar(this.from.options.radius + 9);
+        const v = vnorm.clone().multiplyScalar(this.from.options.radius);
         
         let end = this.to.pos.clone().subtract(v),
             start = this.from.pos.clone().add(v);
@@ -81,6 +81,8 @@ export default class Transition{
         const tw = ctx.measureText(this.v.join(', ')).width;
 
         ctx.fillStyle = '#999';
+
+        let arrowSize = 20;
 
         if(transitionStore.getTransitionIndex(this.to.label, this.from.label) === -1){
             ctx.beginPath();
@@ -105,6 +107,8 @@ export default class Transition{
                 ...end.toArray(),
                 270);
             
+            arrowSize = 15;
+
             textPos = this.from.pos.clone().add(tmp.clone().multiplyScalar(2.8)).toArray();
             arrAngle = -ea + (Math.PI * 10 / 9);
         }else {
@@ -123,7 +127,7 @@ export default class Transition{
 
         // Arrow
         const arrowAngle = 20;
-        Util.drawArrow(ctx, ...end.toArray(), arrAngle === 0 ? vnorm : vnorm.rotateBy(arrAngle), arrowAngle);
+        Util.drawArrow(ctx, ...end.toArray(), arrAngle === 0 ? vnorm : vnorm.rotateBy(arrAngle), arrowAngle, arrowSize);
 
         ctx.fillText(
             this.v.join(', '), 

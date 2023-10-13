@@ -1,5 +1,6 @@
 import Victor from "victor";
 import Util from "../Util";
+import { useMainStore } from "@/stores/mainStore";
 
 class StateOptions{
     // Put more here
@@ -7,6 +8,9 @@ class StateOptions{
     border = 2;
     borderColor = '#888';
     bg = '#444';
+    labelColor = '#999';
+    selected_bg = '#888';
+    selected_labelColor = '#fff';
 }
 
 /**Constants */
@@ -56,9 +60,14 @@ export default class State{
      * @param {CanvasRenderingContext2D} ctx 
      */
     draw(ctx){
+        const mainStore = useMainStore();
+
         const { pos, options, label } = this;
         const { x, y } = pos;
-        const { radius, border, borderColor, bg } = options;
+        const { radius, 
+            border, borderColor, 
+            bg, labelColor,
+            selected_bg, selected_labelColor } = options;
         const fullWidth = radius + border;
 
         if(this.isFinish){
@@ -84,17 +93,18 @@ export default class State{
 
         ctx.beginPath();
         // Then the inner part
-        ctx.fillStyle = bg;
+        ctx.fillStyle = mainStore.selected?.label === this.label ? selected_bg : bg;
         ctx.ellipse(x, y, radius, radius, 0, 0, deg360);
         ctx.fill();
         ctx.closePath();
 
-        ctx.fillStyle = '#999';
+        ctx.fillStyle = mainStore.selected?.label === this.label ? selected_labelColor : labelColor;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.font = '12px Roboto';
         ctx.fillText(label, x, y + 1);
 
+        ctx.fillStyle = borderColor;
         if(this.isStart) Util.drawArrow(ctx, x - radius, y, 0, 90);
     }
 }
