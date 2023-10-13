@@ -51,9 +51,6 @@ export const useMainStore = defineStore("main", () => {
             initial = stateStore.savedStart,
             accepting = stateStore.accepting;
 
-
-        console.log(initial, states.length, transition.length, accepting.length);
-
         if(initial === undefined ||
             states.length === 0 ||
             transition.length === 0 ||
@@ -142,8 +139,6 @@ ${transition.map(t => t.str()).join('\n')}`;
 
         let a, r;
 
-        console.log(str);
-
         try {
             a = noam.fsm.parseFsmFromString(str);
             a = noam.fsm.minimize(a);
@@ -155,7 +150,6 @@ ${transition.map(t => t.str()).join('\n')}`;
             console.log(err);
         }
 
-        console.log(r);
         regexResult.value = r;
     }
 

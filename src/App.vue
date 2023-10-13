@@ -19,34 +19,72 @@
 
           <div class="flex flex-grow">
             <!-- Controls -->
-            <v-sheet height="100%" width="50px" color="#252525" elevation="3" class=" flex-col gap-2 p-2" id="toolbar">
+            <v-sheet height="100%" width="50px" color="#252525" elevation="3" class="flex flex-col gap-2 p-2 justify-between" id="toolbar">
 
-              <v-btn-toggle v-model="m" class="flex-col gap-2 items-center w-full h-auto" mandatory rounded="0">
+              <div class="flex flex-col gap-2">
+                
+                <v-btn-toggle v-model="m" class="flex-col gap-2 items-center w-full h-auto" mandatory rounded="0">
 
-                <v-btn v-for="t in tools" :key="t.name" :value="t.name">
-                  {{ t.text }}
-                  <v-tooltip
-                    activator="parent"
-                    class="p-0"
-                    contentClass="hotkey-tooltip"
-                    >
-                    <span class="capitalize">{{t.name}}</span> Mode [{{ t.hotkey }}]
-                  </v-tooltip>
-                </v-btn>
+                  <v-btn v-for="t in tools" :key="t.name" :value="t.name">
+                    {{ t.text }}
+                    <v-tooltip
+                      activator="parent"
+                      class="p-0"
+                      contentClass="hotkey-tooltip"
+                      >
+                      <span class="capitalize">{{t.name}}</span> Mode [{{ t.hotkey }}]
+                    </v-tooltip>
+                  </v-btn>
 
-              </v-btn-toggle>
+                </v-btn-toggle>
 
-              <div class="pt-1">
-                <v-btn @click="mainStore.deleteAll()"> 🗑️ 
-                  <v-tooltip
-                    activator="parent"
-                    class="p-0"
-                    content-class="hotkey-tooltip">
-                      <span class="capitalize">Delete All</span>
-                  </v-tooltip>
-                </v-btn>
               </div>
 
+              <div class="flex-col gap-2">
+                <!-- Delete All -->
+                <div class="pt-1">
+                  <v-btn @click="mainStore.deleteAll()"> 🗑️ 
+                    <v-tooltip
+                      activator="parent"
+                      class="p-0"
+                      content-class="hotkey-tooltip">
+                        <span class="capitalize">Delete All</span>
+                    </v-tooltip>
+                  </v-btn>
+                </div>
+
+                <!-- Import/Export -->
+                <div class="pt-1">
+                <div class="pt-1">
+                  <input type="file" class="sr-only" ref="fileinput" @change="loadJSON" >
+                  <v-btn
+                    @click="fileinput.click()">
+                    <v-icon size="large">mdi-import</v-icon>
+                    <v-tooltip
+                      activator="parent"
+                      class="p-0"
+                      content-class="hotkey-tooltip">
+                        <span class="capitalize">Import</span>
+                    </v-tooltip>
+                  </v-btn>
+                </div>
+                  <v-btn>
+                    <v-icon >mdi-export</v-icon>
+                    <v-tooltip
+                      activator="parent"
+                      class="p-0"
+                      content-class="hotkey-tooltip">
+                        <span class="capitalize">Export</span>
+                    </v-tooltip>
+                    <v-dialog
+                      activator="parent">
+
+                        <SaveFile />
+
+                    </v-dialog>
+                  </v-btn>
+                </div>
+              </div>
             </v-sheet>
 
             <FSMVisualizer class="flex-grow" />
@@ -89,6 +127,9 @@ import AlphabetLister from './components/AlphabetLister.vue';
 import TransitionFab from './components/TransitionFab.vue';
 import StateHelper from './components/StateHelper.vue';
 import SettingsMenu from './components/SettingsMenu.vue';
+import SaveFile from './components/SaveFile.vue';
+import { onMounted } from 'vue';
+import { useFileStore } from './stores/fileStore';
 
 export default {
   name: 'App',
@@ -97,7 +138,8 @@ export default {
     AlphabetLister,
     TransitionFab,
     StateHelper,
-    SettingsMenu
+    SettingsMenu,
+    SaveFile
   },
   setup() {
 
@@ -106,7 +148,8 @@ export default {
       modeStore = useModeStore(),
       alphabetStore = useAlphabetStore(),
       transitionStore = useTransitionStore(),
-      stateStore = useStateStore();
+      stateStore = useStateStore(),
+      fileStore = useFileStore();
 
     const tools = reactive([
       {
@@ -126,6 +169,7 @@ export default {
       }
     ]);
 
+    const fileinput = ref(null);
     const regex = ref('');
     const regexResult = computed(() => mainStore.regexResult);
 
@@ -140,11 +184,21 @@ export default {
       set: v => modeStore.mode = v
     });
 
+    const loadJSON = async () => {
+      const file = fileinput.value.files.length === 0 ? null : await fileinput.value.files[0].text();
+
+      if(file === null) return;
+      
+      fileStore.loadDFA(JSON.parse(file));
+    }
+
     return {
       mainStore,
       m,
       tools,
-      regex
+      regex,
+      fileinput,
+      loadJSON
     }
   },
 }
