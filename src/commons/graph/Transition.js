@@ -128,6 +128,7 @@ export default class Transition{
             connected.forEach(s => {
                 sldir.add(s.pos.clone().subtract(this.from.pos).norm())
             })
+            if(stateStore.getState(this.from.label).isStart) sldir.add(new Victor(-1.5, 0));
             sldir.norm().invert();
 
 
