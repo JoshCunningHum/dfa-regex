@@ -26,6 +26,36 @@ export default class State{
     isFinish = false;
     isStart = false;
 
+    //#region D3 Force Directive Layout
+
+    get x(){
+        return this.pos.x;
+    }
+
+    get y(){
+        return this.pos.y;
+    }
+
+    set x(v){
+        this.pos.x = v;
+    }
+
+    set y(v){
+        this.pos.y = v;
+    }
+
+    _isDragging = false;
+
+    get fx(){
+        return this._isDragging ? this.x : undefined;
+    }
+
+    get fy(){
+        return this._isDragging ? this.y : undefined;
+    }
+
+    //#endregion
+
     /**
      * 
      * @param {Number} x 

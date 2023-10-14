@@ -3,10 +3,12 @@ import { defineStore } from "pinia";
 import { computed, reactive, ref } from "vue";
 import { useTransitionStore } from "./transitionStore";
 import { useMainStore } from "./mainStore";
+import { useForceStore } from "./forceStore";
 
 export const useStateStore = defineStore('state', () => {
 
     const transitionStore = useTransitionStore(),
+        forceStore = useForceStore(),
         mainStore = useMainStore();
 
     /**@type {State[]} */
@@ -18,6 +20,7 @@ export const useStateStore = defineStore('state', () => {
     const addState = (state) => {
         states.push(state);
         mainStore.genRegex();
+        forceStore.update();
     };
 
     const getStateIndex = label => states.findIndex(s => s.label === label),
@@ -37,6 +40,7 @@ export const useStateStore = defineStore('state', () => {
         if(mainStore.selected.label === label) mainStore.select(undefined);
 
         states.splice(i , 1);
+        forceStore.update();
         mainStore.genRegex();
     }
 

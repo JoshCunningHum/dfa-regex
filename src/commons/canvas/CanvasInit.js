@@ -71,12 +71,16 @@ export function initCanvas(){
 
         const { x: ox, y: oy } = origin;
 
+        // selected._isDragging = true;
         selected.pos.x = ox + x;
         selected.pos.y = oy + y;
     })
 
     ip.on('dragend', ev => {
-        if(mainStore.selected) canvas.cursor = 'pointer';
+        if(mainStore.selected) {
+            canvas.cursor = 'pointer';
+            mainStore.selected._isDragging = false;
+        }
     })
 
     // Monitor on clicks

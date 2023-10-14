@@ -12,6 +12,18 @@ export default class Transition{
     /**@type {String[]} */
     v = [];
 
+    //#region D3 Force Directive Layout
+
+    get source(){
+        return this.from;
+    }
+
+    get target(){
+        return this.to;
+    }
+
+    //#endregion
+
     /**
      * 
      * @param {State} from 
@@ -169,7 +181,7 @@ export default class Transition{
             vnorm.copy(ea);
         }else {
             
-            const maxArc = 150, minArc = 15,
+            const maxArc = 100, minArc = 15,
                 arc = maxArc**2 / this.from.pos.distanceSq(this.to.pos);
                 
 

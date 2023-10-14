@@ -3,11 +3,13 @@ import { defineStore } from "pinia";
 import { reactive } from "vue";
 import { useStateStore } from "./stateStore";
 import { useMainStore } from "./mainStore";
+import { useForceStore } from "./forceStore";
 
 export const useTransitionStore = defineStore('transition', () => {
 
     const stateStore = useStateStore(),
-        mainStore = useMainStore();
+        mainStore = useMainStore(),
+        forceStore = useForceStore();
 
     /**@type {Transition[]} */
     const transitions = reactive([]);
@@ -28,6 +30,7 @@ export const useTransitionStore = defineStore('transition', () => {
             if(labels.length === 0) removeTransition(from, to);
         }
         
+        forceStore.update();
         mainStore.genRegex();
     }
 
@@ -46,6 +49,7 @@ export const useTransitionStore = defineStore('transition', () => {
         if(i === -1) return;
         transitions[i].v.splice(0);
         transitions.splice(i , 1);
+        forceStore.update();
         mainStore.genRegex();
     }
 
