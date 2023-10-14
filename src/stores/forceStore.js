@@ -15,7 +15,7 @@ export const useForceStore = defineStore('force', () => {
         .alphaDecay(0)
         .alpha(.5)
         .alphaTarget(0.7)
-        .force('repel', d3.forceManyBody().strength(-5))
+        .force('repel', d3.forceCollide(d => 20))
         .force('center', centerForce);
 
 

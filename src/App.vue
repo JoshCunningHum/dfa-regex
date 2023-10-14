@@ -131,6 +131,7 @@ import TransitionFab from './components/TransitionFab.vue';
 import StateHelper from './components/StateHelper.vue';
 import SettingsMenu from './components/SettingsMenu.vue';
 import SaveFile from './components/SaveFile.vue';
+import noam from './plugins/noam';
 
 export default {
   name: 'App',
@@ -194,6 +195,13 @@ export default {
       fileStore.loadDFA(JSON.parse(file));
     }
     
+    // onMounted(() => {
+    //   const epsilon = 'ε';
+
+    //   noam.fsm.epsilonSymbol = epsilon;
+    //   noam.grammar.epsilonSymbol = epsilon;
+    // })
+
     // Load settings on local storage
     settingsStore.sync();
 

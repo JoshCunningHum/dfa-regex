@@ -21,7 +21,7 @@
                 <div class="flex-grow overflow-y-auto flex flex-col gap-2 pt-2">
                     
                     <div class=text-caption>Conversion</div>
-                    <div class="pl-5 flex flex-col gap-2">
+                    <div class="pl-5 flex flex-col ">
                         <!--  Simplification -->
                         <div>
                             <v-switch
@@ -41,6 +41,32 @@
                                             $ - symbolizes the empty string
                                         </v-tooltip>
                                     </span>
+                                </template>
+
+                            </v-switch>
+                        </div>
+                        <!-- NFA MODE -->
+                        <div>
+                            <v-switch
+                                v-model="settingsStore.nfaMode"
+                                hide-details
+                                density="compact">
+
+                                <template v-slot:label>
+                                    NFA Mode
+                                </template>
+
+                            </v-switch>
+                        </div>
+                        <!-- Hide Epsilon -->
+                        <div>
+                            <v-switch
+                                v-model="settingsStore.hideEpsilon"
+                                hide-details
+                                density="compact">
+
+                                <template v-slot:label>
+                                    Hide Epsilon
                                 </template>
 
                             </v-switch>
@@ -65,6 +91,16 @@
                             </v-btn>
                         </div>
                     </div>
+
+                    <!-- <div class="text-caption">Dev</div>
+                    <div class=px-5 flex flex-col gap-2>
+                        <div>
+                            <v-btn
+                                @click="log">
+                                Log
+                            </v-btn>
+                        </div>
+                    </div> -->
                 </div>
 
             </v-sheet>
@@ -74,6 +110,7 @@
 </template>
 
 <script setup>
+import { FSM } from '@/commons/graph/Converter';
 import Util from '../commons/Util';
 import { useMainStore } from '@/stores/mainStore';
 import { useSettingStore } from '@/stores/settingsStore';
@@ -89,6 +126,11 @@ const expand = ref(false);
 const copyFormalSpecs = () => {
     const text = mainStore.formal_specs;
     Util.copyToClipboard(text);
+}
+
+const log = () => {
+    const str = mainStore.formal_specs;
+    const fsm = new FSM(str);
 }
 
 </script>

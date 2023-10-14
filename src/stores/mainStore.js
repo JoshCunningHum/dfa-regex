@@ -9,6 +9,7 @@ import noam from "@/plugins/noam";
 import Victor from "victor";
 import { useAlphabetStore } from "./alphabetStore";
 import { useSettingStore } from "./settingsStore";
+import { FSM } from "@/commons/graph/Converter";
 
 export const useMainStore = defineStore("main", () => {
 
@@ -71,10 +72,12 @@ export const useMainStore = defineStore("main", () => {
         try{
             
             a = noam.re.string.toAutomaton(regex);
-            a = noam.fsm.convertEnfaToNfa(a);
-            a = noam.fsm.convertNfaToDfa(a);
-            a = noam.fsm.minimize(a);
-            a = noam.fsm.convertStatesToNumbers(a);
+            if(!settingsStore.nfaMode){
+                a = noam.fsm.convertEnfaToNfa(a);
+                a = noam.fsm.convertNfaToDfa(a);
+                a = noam.fsm.minimize(a);
+                a = noam.fsm.convertStatesToNumbers(a);
+            }
             
         }catch(err){
             console.log(err);
@@ -103,14 +106,16 @@ export const useMainStore = defineStore("main", () => {
         // Set transitions
         trs.forEach(t => {
 
-            const { fromState, symbol, toStates: toStateArr } = t,
-                toState = toStateArr[0];
+            const { fromState, symbol, toStates: toStateArr } = t;
 
-            transitionStore.addTransition({
-                labels: [symbol],
-                from: `q${fromState}`,
-                to: `q${toState}`
+            toStateArr.forEach(ts => {
+                transitionStore.addTransition({
+                    labels: [symbol],
+                    from: `q${fromState}`,
+                    to: `q${ts}`
+                })
             })
+
         })
     }
 
@@ -145,11 +150,22 @@ ${transition.map(t => t.str()).join('\n')}`;
         let a, r;
 
         try {
-            a = noam.fsm.parseFsmFromString(str);
-            a = noam.fsm.minimize(a);
-            a = noam.fsm.toRegex(a);
-            a = noam.re.tree.simplify(a, {"useFsmPatterns": settingsStore.simplifyDFARegex});
-            r = noam.re.tree.toString(a);
+            if(!settingsStore.nfaMode && !settingsStore.simplifyDFARegex){
+                const fsm = new FSM(formal_specs.value);
+                r = fsm.toRegex();
+            }else{
+                a = noam.fsm.parseFsmFromString(str);
+                if(settingsStore.simplifyDFARegex) a = noam.fsm.minimize(a);
+                if(!settingsStore.nfaMode) {
+                    a = noam.fsm.convertEnfaToNfa(a);
+                    a = noam.fsm.convertNfaToDfa(a);
+                }
+                a = noam.fsm.toRegex(a);
+                a = noam.re.tree.simplify(a, {"useFsmPatterns": settingsStore.simplifyDFARegex});
+                r = noam.re.tree.toString(a);
+            }
+
+
         }catch(err){
             regexResult.value = '';
             console.log(err);

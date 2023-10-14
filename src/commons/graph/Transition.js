@@ -3,6 +3,7 @@ import State from "./State";
 import { useTransitionStore } from "@/stores/transitionStore";
 import Util from "../Util";
 import { useStateStore } from "@/stores/stateStore";
+import { useSettingStore } from "@/stores/settingsStore";
 
 export default class Transition{
     /**@type {State} */
@@ -83,7 +84,8 @@ export default class Transition{
             start = this.from.pos.clone().add(v);
 
         const transitionStore = useTransitionStore(),
-            stateStore = useStateStore();
+            stateStore = useStateStore(),
+            settingsStore = useSettingStore();
 
         let textPos = null;
 
@@ -198,6 +200,7 @@ export default class Transition{
         const arrowAngle = 20;
         Util.drawArrow(ctx, ...end.toArray(), vnorm, arrowAngle, arrowSize);
 
+        if(settingsStore.hideEpsilon && this.v.includes('$')) return;
         ctx.fillText(
             this.v.join(', '), 
         ...textPos

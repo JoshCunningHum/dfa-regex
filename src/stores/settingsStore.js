@@ -10,6 +10,8 @@ export const useSettingStore = defineStore('setting', () => {
 
     const simplifyDFARegex = ref(true);
     const saveFSMOnExit = ref(false);
+    const nfaMode = ref(false);
+    const hideEpsilon = ref(true);
 
     watch(simplifyDFARegex, () => {
         mainStore.genRegex();
@@ -23,6 +25,8 @@ export const useSettingStore = defineStore('setting', () => {
 
             simplifyDFARegex.value = data.simplifyDFARegex;
             saveFSMOnExit.value = data.saveFSMOnExit;
+            nfaMode.value = data.nfaMode;
+            hideEpsilon.value = data.hideEpsilon;
     
             if(saveFSMOnExit.value) fileStore.loadDFA(data.fsmData);
         }
@@ -38,13 +42,18 @@ export const useSettingStore = defineStore('setting', () => {
         Local.set('config', {
             simplifyDFARegex: simplifyDFARegex.value,
             saveFSMOnExit: saveFSMOnExit.value,
-            fsmData: fsmData
+            fsmData: fsmData,
+            nfaMode: nfaMode.value,
+            hideEpsilon: hideEpsilon.value
         })
     }
 
     return {
         simplifyDFARegex,
         saveFSMOnExit,
+        nfaMode,
+        hideEpsilon,
+
         sync: startSync
     }
 });
