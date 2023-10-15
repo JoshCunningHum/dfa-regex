@@ -30,6 +30,7 @@ import { useStateStore } from '@/stores/stateStore';
 import { useTransitionStore } from '@/stores/transitionStore';
 import { ref, computed } from 'vue';
 import { Drawables } from '@/commons/canvas/Drawables';
+import { useModeStore } from '@/stores/modeStore';
 
 window.Drawables = Drawables;
 
@@ -41,6 +42,7 @@ export default {
             mainStore = useMainStore(),
             transitionStore = useTransitionStore(),
             stateStore = useStateStore(),
+            modeStore = useModeStore(),
             forceStore = useForceStore(),
             rafID = ref(0);
 
@@ -49,11 +51,9 @@ export default {
         const states = computed(() => stateStore.states),
             transitions = computed(() => transitionStore.transitions);
 
-        // Force Directive Layout
-
-
         const animate = () => {
             const { clientHeight: h, clientWidth: w} = c.value;
+
             /**@type {CanvasRenderingContext2D} */
             const ctx = ctxRef.value;
             
@@ -63,6 +63,13 @@ export default {
             // Force Directive Layout
             if(forceDirectiveEnabled.value) forceStore.tick();
             else forceStore.stop();
+
+            // Put a sign to dbl click on Default Mode when no states exists
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillStyle = '#444';
+            ctx.font = '45px Roboto';
+            if(states.value.length === 0 && modeStore.mode === 'default') ctx.fillText('Double click to create a state', w / 2, h / 2);
 
             // Draw States
             states.value.forEach(s => s.draw(ctx));
