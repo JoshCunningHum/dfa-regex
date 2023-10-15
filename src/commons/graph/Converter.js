@@ -197,6 +197,10 @@ export class FSM {
                 // Handle Outgoings
                 outs.forEach(s => {
                     if(s === state) return;
+                    if(!this.hasPath(s, end)){
+                        this.remove_s(s); // Remove Dead State
+                        return;
+                    };
                     const ft = this.wrap(this.t(start, state), '+');
                     const sl = this.wrap(this.t(state, state), '*');
                     const et = this.wrap(this.t(state, s), '+');
@@ -207,7 +211,7 @@ export class FSM {
                 ins.forEach(s => {
                     if(s === state && s === start) return;
 
-                    const targets = outs;
+                    const targets = outs;   
 
                     targets.forEach(d => {
                         const ts = this.wrap(this.t(s, state), '+');
@@ -226,7 +230,7 @@ export class FSM {
             counter++;
         }
 
-        return this.data.transitions.map(t => t.symbol === '' ? '$' : t.symbol).join('+');
+        return this.data.transitions.filter(t => t.fromState === start && t.toStates.includes(end)).map(t => t.symbol === '' ? '$' : t.symbol).join('+');
     }
 
     wrap(transitions, operation){
