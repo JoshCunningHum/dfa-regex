@@ -228,7 +228,7 @@ export class FSM {
         }];
 
         let counter = 0; // To avoid infinite loop
-        while (states.length > 2 && counter < states.length) {
+        while (states.length > 2 && counter < states.length * 2) {
             // Get Intermeddiate of start
             const imd = this.lout(start).filter((l) => this.hasPath(l, end));
 
@@ -241,6 +241,7 @@ export class FSM {
         }
 
         stepStore.setSteps(savedChanges);
+        // console.log(this.data);
 
         return this.data.transitions
             .filter((t) => t.fromState === start && t.toStates.includes(end))
@@ -273,7 +274,7 @@ export class FSM {
 
             const pathToEnd = this.path(s, end).slice(1, -1);
             if (pathToEnd.includes(state)) {
-                // console.log(`Looping: ${s} Entrance: ${state}`);
+                console.log(`Looping: ${s} Entrance: ${state}`);
                 // Delete the state "s" first before continuing
                 changes.push(...this.stateEliminateDelete(s, start, end));
                 // Remove S in the outgoings and ingoings (if found)
