@@ -25,6 +25,7 @@
                         <!--  Simplification -->
                         <div>
                             <v-switch
+                                color="primary"
                                 v-model="settingsStore.simplifyDFARegex"
                                 hide-details
                                 density="compact">
@@ -48,6 +49,7 @@
                         <!-- NFA MODE -->
                         <div>
                             <v-switch
+                                color="primary"
                                 v-model="settingsStore.nfaMode"
                                 hide-details
                                 density="compact">
@@ -61,6 +63,7 @@
                         <!-- Hide Epsilon -->
                         <div>
                             <v-switch
+                                color="primary"
                                 v-model="settingsStore.hideEpsilon"
                                 hide-details
                                 density="compact">
@@ -77,6 +80,7 @@
                     <div class="px-5 flex flex-col gap-2">
                         <div>
                             <v-switch
+                                color="primary"
                                 v-model="settingsStore.saveFSMOnExit"
                                 hide-details
                                 density="compact"

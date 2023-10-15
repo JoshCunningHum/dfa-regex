@@ -27,6 +27,7 @@
         <div class="px-2">
             <div>
                 <v-switch
+                                color="primary"
                     hide-details
                     density="compact"
                     :true-value="true"
@@ -38,6 +39,7 @@
             </div>
             <div>
             <v-switch
+                                color="primary"
                 hide-details
                 density="compact"
                 v-model="state.isFinish"
