@@ -1,4 +1,5 @@
 import noam from '@/plugins/noam';
+import { useStepStore } from '@/stores/stepStore';
 
 class FSMTransition{
     /**@type {String} */
@@ -50,6 +51,33 @@ export class FSM {
 
     get alphabet() {
         return this.data.alphabet;
+    }
+
+    history = [];
+
+    clearHistory = () => this.history.splice(0);
+
+    setHistory = values => {
+        this.clearHistory();
+        this.history.push(...values);
+    }
+
+    get present(){
+        const { states, initialState, acceptingStates, transitions, alphabet } = this.data;
+        return structuredClone(this.data);
+        return structuredClone({
+            states,
+            initialState,
+            acceptingStates,
+            transitions: transitions.map(t => {
+                return {
+                    toStates: t.toStates,
+                    symbol: t.symbol === '' || t.symbol === ' ' ? 'ε' : t.symbol,
+                    fromState: t.fromState
+                }
+            }),
+            alphabet
+        });
     }
 
     add_t = (from, to, value) => {
@@ -173,11 +201,13 @@ export class FSM {
     toRegex() {
         // Do validation
         this.data = noam.fsm.removeUnreachableStates(this.data);
+        this.clearHistory();
         if (!noam.fsm.validate(this.data)) {
             console.log("FSM Not Valid");
-
             return;
         }
+
+        const stepStore = useStepStore();
 
         const { states, accepting, transitions, initial } = this;
 
@@ -192,6 +222,11 @@ export class FSM {
         this.data.initialState = start;
         this.data.acceptingStates = [end];
 
+        const savedChanges = [{
+            title: 'Original',
+            data: this.present
+        }];
+
         let counter = 0; // To avoid infinite loop
         while (states.length > 2 && counter < states.length) {
             // Get Intermeddiate of start
@@ -199,11 +234,13 @@ export class FSM {
 
             imd.forEach((state) => {
                 if (state === end) return;
-                this.stateEliminateDelete(state, start, end);
+                savedChanges.push(...this.stateEliminateDelete(state, start, end));
             });
 
             counter++;
         }
+
+        stepStore.setSteps(savedChanges);
 
         return this.data.transitions
             .filter((t) => t.fromState === start && t.toStates.includes(end))
@@ -213,16 +250,17 @@ export class FSM {
 
     stateEliminateDelete(state, start, end) {
         // console.log(`Deleting ${state}`);
-
-        const transitions = this.transitions;
+        
+        const changes = [];
 
         const outs = this.lout(state).filter((l) => {
-                const isNotDeadState = this.hasPath(l, end);
-                if (!isNotDeadState) this.remove_s(l);
-                return isNotDeadState;
-            }),
-            ins = this.lins(state);
-
+            const isNotDeadState = this.hasPath(l, end);
+            if (!isNotDeadState) this.remove_s(l);
+            return isNotDeadState;
+        }),
+        ins = this.lins(state);
+        
+        // const transitions = this.transitions;
         // console.log(`Transitions: `, transitions);
         // console.log(`Outs: `, outs);
         // console.log(`Ins: `, ins);
@@ -237,7 +275,7 @@ export class FSM {
             if (pathToEnd.includes(state)) {
                 // console.log(`Looping: ${s} Entrance: ${state}`);
                 // Delete the state "s" first before continuing
-                this.stateEliminateDelete(s, start, end);
+                changes.push(...this.stateEliminateDelete(s, start, end));
                 // Remove S in the outgoings and ingoings (if found)
                 outs.splice(i, 1); i--;
                 const insIndex = ins.indexOf(s);
@@ -261,8 +299,11 @@ export class FSM {
         });
 
         this.remove_s(state);
-        // console.log(state);
-        // console.log(structuredClone(this.data));
+        changes.push({
+            title: `Remove ${state}`,
+            data: this.present
+        });
+        return changes;
     }
 
     wrap(transitions, operation) {

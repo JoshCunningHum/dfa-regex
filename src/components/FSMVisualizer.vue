@@ -5,7 +5,9 @@
             ref="c">
 
         </canvas>
-        <div class="absolute right-0 bottom-0 z-50 p-3">
+        <div class="absolute right-0 bottom-0 z-50 p-3 flex flex-col gap-2">
+            <StepByStep />
+
             <v-btn variant="tonal"
                 size="small"
                 icon
@@ -28,9 +30,13 @@ import { useMainStore } from '@/stores/mainStore';
 import { useForceStore } from '@/stores/forceStore';
 import { useStateStore } from '@/stores/stateStore';
 import { useTransitionStore } from '@/stores/transitionStore';
-import { ref, computed } from 'vue';
-import { Drawables } from '@/commons/canvas/Drawables';
 import { useModeStore } from '@/stores/modeStore';
+import { useStepStore } from '@/stores/stepStore';
+
+import StepByStep from './StepByStep.vue';
+
+import { Drawables } from '@/commons/canvas/Drawables';
+import { ref, computed } from 'vue';
 
 window.Drawables = Drawables;
 
@@ -43,6 +49,7 @@ export default {
             transitionStore = useTransitionStore(),
             stateStore = useStateStore(),
             modeStore = useModeStore(),
+            stepStore = useStepStore(),
             forceStore = useForceStore(),
             rafID = ref(0);
 
@@ -87,11 +94,15 @@ export default {
             c,
             mainStore,
             forceStore,
+            stepStore,
             
             rafID,
             animate,
             forceDirectiveEnabled
         }
+    },
+    components: {
+        StepByStep
     },
     mounted(){
         // Set canvas element to process any incoming input
