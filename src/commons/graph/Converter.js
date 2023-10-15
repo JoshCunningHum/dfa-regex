@@ -201,6 +201,11 @@ export class FSM {
                         this.remove_s(s); // Remove Dead State
                         return;
                     };
+
+                    const pathToEnd = this.path(s, end).slice(1, -1);
+
+                    if(pathToEnd.includes(state)) console.log(`State ${s} is inside a looping system which entrance/exit is ${state}`);
+
                     const ft = this.wrap(this.t(start, state), '+');
                     const sl = this.wrap(this.t(state, state), '*');
                     const et = this.wrap(this.t(state, s), '+');
@@ -231,6 +236,10 @@ export class FSM {
         }
 
         return this.data.transitions.filter(t => t.fromState === start && t.toStates.includes(end)).map(t => t.symbol === '' ? '$' : t.symbol).join('+');
+    }
+
+    stateEliminateDelete(state){
+
     }
 
     wrap(transitions, operation){
@@ -276,5 +285,49 @@ export class FSM {
         }
 
         return false;
+    }
+
+    path(from, to){
+        const nvs = [{
+            label: from,
+            from: ''
+        }], vs = [];
+
+        let counter = 0;
+        while(nvs.length > 0){
+
+            const {label: s, from: prev} = nvs.shift();
+            vs.push({label: s, from: prev});
+
+            if(s === to) {
+                
+                let target = to, path = [to];
+                while(target !== from){
+                    const { from } = vs.find(v => v.label === target);
+                    path.unshift(from);
+                    target = from;
+                }
+
+                return path;
+            };
+
+            const outs = new Set();
+
+            this.tout(s).forEach(os => os.toStates.forEach(l => !vs.find(v => v.label === l) && outs.add(l)));
+            nvs.push(...[...outs.values()].map(v => {
+                return {
+                    label: v,
+                    from: s
+                }
+            }));
+            counter++;
+
+            if(counter > this.states.length ** 2){
+                console.log('BROKE PATHFINDING');
+                break;
+            }
+        }
+
+        return [];
     }
 }

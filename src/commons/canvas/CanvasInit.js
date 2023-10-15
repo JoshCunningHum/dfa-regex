@@ -72,6 +72,7 @@ export function initCanvas(){
         const { x: ox, y: oy } = origin;
 
         // selected._isDragging = true;
+        selected._isDragging = true;
         selected.pos.x = ox + x;
         selected.pos.y = oy + y;
     })
